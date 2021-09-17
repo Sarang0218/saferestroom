@@ -7,6 +7,8 @@ authors = ["Your Name <you@example.com>"]
 [tool.poetry.dependencies]
 python = "^3.8"
 Django = "^3.2.7"
+qrcode = "^7.3"
+twilio = "^6.63.2"
 
 [tool.poetry.dev-dependencies]
 

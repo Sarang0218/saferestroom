@@ -12,7 +12,7 @@ while True:
   else:
     optionb = input("Would you like to migrate the server? (Y/n)")
     if optionb == "Y":
-      os.system("python src/manage.py makemigrations 서버")
+      os.system("python src/manage.py makemigrations")
       os.system("python src/manage.py migrate")
     else:
       optionc = input("Would you like to create a superuser (Y/n)")
