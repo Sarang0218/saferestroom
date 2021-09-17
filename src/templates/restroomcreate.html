@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+
+{% block content2 %}
+    <div class="row justify-content-center mt-5">
+        <div class="col-md-5">
+            <h2>화장실 등록하기</h2>
+        </div>
+    </div>
+    <div class="row justify-content-center mt-5">
+        <div class="col-md-5">
+            {% if error %}
+                <div class="alert alert-danger" role="alert">
+                    {{ error }}
+                </div>
+            {% endif %}
+            <form method="POST">
+                {% csrf_token %}
+                <div class="form-group">
+                    <label for="restroom">관리할 화장실</label>
+                    <select name="restroom" id="restroom" value="">
+                      {% for selection in selections %}
+                        <option value="{{selection.1}}">{{selection.0}}</option>
+                      {% endfor %}
+                    </select>
+                </div>
+                
+  
+                <br>
+                <div class="form-group">
+                    
+                    <label for="time">QR코드 유효기간 (분):</label>
+
+                    <select name="time" id="time" value="">
+                      
+                      <option value="0">0</option>
+                      <option value="2">2</option>
+                      <option value="3">3</option>
+                      <option value="5">5</option>
+                      <option value="10">10</option>
+                      <option value="20">20</option>
+                    </select>
+                </div>
+
+                <br>
+                <button type="submit" class="btn btn-primary">등록</button><a href="{% url 'restroom_sign_in_view'%}" class="btn btn-light">뒤로가기</a>
+            </form>
+            <hr>
+            <div class="text-center">
+               등록 되어있는 빌딩만 가능!
+
+            </div>
+        </div>
+    </div>
+{% endblock %}

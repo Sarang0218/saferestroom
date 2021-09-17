@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{%block content%}
+{% if user.is_authenticated %}
+<h3>안녕하세요 {{ user.username }}님! 오늘도 좋은하루 되세요!</h3><br>
+{% else %}
+<h3><b>안녕하세요! 오늘도 좋은하루 되세요!</h3><br>
+
+{%endif%}
+
+{%endblock%}
+{%block contentk%}
+{% if not user.is_authenticated %}
+<a href="{% url 'login' %}" class="btn btn-warning">로그인하기!</a><h4> -</h4> <a href="{% url 'signup' %}" class="btn btn-success">회원가입하기!</a>
+{% else %}
+<a href="{% url 'restroom_sign_in_view'%}" class="btn btn-success">홈으로!</a><h4> -</h4>
+<a href="{% url 'logout'%}" class="btn btn-light">로그아웃</a>
+{% endif %}
+{%endblock%}

@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+
+{% block content2 %}
+    <div class="row justify-content-center mt-5">
+        <div class="col-md-5">
+            <h2>로그인</h2>
+        </div>
+    </div>
+    <div class="row justify-content-center mt-5">
+        <div class="col-md-5">
+            {% if error %}
+                <div class="alert alert-danger" role="alert">
+                    {{ error }}
+                </div>
+            {% endif %}
+            <form method="POST">
+                {% csrf_token %}
+                <div class="form-group">
+                    <label for="username">유저 이름</label>
+                    <input type="text" name="username" class="form-control" id="username">
+                </div>
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <input type="password" name="password" class="form-control" id="password">
+                </div>
+                <br>
+                <button type="submit" class="btn btn-primary">로그인</button>
+            </form>
+            <hr>
+            <div class="text-center">
+                계정 없으면 <a href="{% url 'signup'%}">회원가입하세요!</a>
+
+            </div>
+        </div>
+    </div>
+{% endblock %}
