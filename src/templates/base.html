@@ -1,4 +1,41 @@
+<style>
+  html, body {
+    height:100%;
+    width:100%;
+    overflow: hidden;
+  }
+  .bg {
+    background-image: url(/static/compbg.png); 
+    background-color: #cccccc;
+    background-repeat: no-repeat;
+    background-position: center;
+    height: 80%;
+    width: 100%;
+    background-size: cover;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+  }
+  .flex {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+  }
+  .parent {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
 
+  .box {
+    flex: 1 1 150px; /*  Stretching: */
+    flex: 0 1 150px; /*  No stretching: */
+    margin: 5px;
+  }
+
+</style>
 
   <head>
     <!-- Required meta tags -->
@@ -11,7 +48,7 @@
 
     <title>안심e화장실 - {% block head_title%}{% endblock %}</title>
   </head>
-  <body>
+  <body class="bg">
     
 
 
@@ -20,12 +57,7 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-U1DAWAznBHeqEIlVSCgzq+c9gqGAJn5c/t99JyeKa9xxaYpSvHU5awsuZVVFIhvj" crossorigin="anonymous"></script>
     
     <br>
-    <div class="d-flex justify-content-center">
-      
-      <h1>안심e화장실 (가게주인용)</h1>
-      
-      
-    </div>
+    
     <br>
     <div class="d-flex justify-content-center">
       
@@ -44,6 +76,11 @@
         {% endblock %}
       
     </div>
+        
+    
+      {% block nat_content%}
+      {% endblock %}
+    
     <div class="d-flex justify-content-center">
         {% block contentg%}
         {% endblock %}

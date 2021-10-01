@@ -6,8 +6,11 @@ from django.utils import timezone
 from django.conf import settings
 # Create your models here.
 class Review(models.Model):
-    score = models.IntegerField()
-    text = models.CharField(max_length=200)
+    sanitation_score = models.IntegerField()
+    safe_score = models.IntegerField()
+    suggest_score = models.IntegerField()
+
+   
 
 class Building(models.Model):
     title = models.CharField(max_length=50)

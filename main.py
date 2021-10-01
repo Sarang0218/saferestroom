@@ -1,5 +1,5 @@
 import os
-print("AUTO RUN IS ENABLED. ^C to escape running the server")
+print("AUTO RUN IS ENABLED.")
 os.system("python src/manage.py runserver 0.0.0.0:3000")
 while True:
   print("\n")
@@ -12,7 +12,7 @@ while True:
   else:
     optionb = input("Would you like to migrate the server? (Y/n)")
     if optionb == "Y":
-      os.system("python src/manage.py makemigrations")
+      os.system("python src/manage.py makemigrations server")
       os.system("python src/manage.py migrate")
     else:
       optionc = input("Would you like to create a superuser (Y/n)")

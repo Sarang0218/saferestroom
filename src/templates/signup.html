@@ -1,13 +1,7 @@
 {% extends "base.html" %}
 
 {% block content2 %}
-    <div class="row justify-content-center mt-5">
-        <div class="col-md-5">
-            <h2>회원가입</h2>
-        </div>
-    </div>
-    <div class="row justify-content-center mt-5">
-        <div class="col-md-5">
+    <h2>회원가입</h2>
             {% if error %}
                 <div class="alert alert-danger" role="alert">
                     {{ error }}
@@ -34,7 +28,7 @@
             <hr>
             <div class="text-center">
                 계정이 있다면 로그인하세요! <a href="{% url 'login'%}">로그인하기</a>
+            
+        
             </div>
-        </div>
-    </div>
 {% endblock %}

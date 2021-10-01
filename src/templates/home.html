@@ -1,18 +1,19 @@
 {% extends "base.html" %}
 {%block content%}
 {% if user.is_authenticated %}
-<h3>안녕하세요 {{ user.username }}님! 오늘도 좋은하루 되세요!</h3><br>
+<h1>안녕하세요 {{ user.username }}님! 오늘도 좋은하루 되세요!</h1><br>
 {% else %}
-<h3><b>안녕하세요! 오늘도 좋은하루 되세요!</h3><br>
+<h1><b>안녕하세요! 오늘도 좋은하루 되세요!</h1><br>
 
 {%endif%}
 
 {%endblock%}
 {%block contentk%}
+
 {% if not user.is_authenticated %}
-<a href="{% url 'login' %}" class="btn btn-warning">로그인하기!</a><h4> -</h4> <a href="{% url 'signup' %}" class="btn btn-success">회원가입하기!</a>
+<a href="{% url 'login' %}" class="btn btn-warning btn-lg btn-block">로그인하기!</a><p style="color:white">만약 보인다면 크롬을 사용해주시기 바랍니다</p><a href="{% url 'signup' %}" class="btn btn-success btn-lg">회원가입하기!</a>
 {% else %}
-<a href="{% url 'restroom_sign_in_view'%}" class="btn btn-success">홈으로!</a><h4> -</h4>
-<a href="{% url 'logout'%}" class="btn btn-light">로그아웃</a>
+<a href="{% url 'restroom_sign_in_view'%}" class="btn btn-success btn-lg">홈으로!</a><p style="color:white">만약 보인다면 크롬을 사용해주시기 바랍니다</p>
+<a href="{% url 'logout'%}" class="btn btn-light btn-lg">로그아웃</a>
 {% endif %}
 {%endblock%}

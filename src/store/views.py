@@ -20,12 +20,19 @@ import os
 from twilio.rest import Client
 date_format = '%Y-%m-%d %H:%M:%S'
 from django.views.decorators.csrf import csrf_exempt
-
+from dateutil.relativedelta import relativedelta
+def remove_old_data():
+    for data in RestroomVisitData.objects.all():
+      if data.made_time + relativedelta(months=3) < timezone.now():
+        data.delete()
+        print("Destroyed old data")
 def logout_view(request):
+    remove_old_data()
     logout(request)
     return redirect('home')
 @csrf_exempt
 def loginuser(request):
+    remove_old_data()
 
     if request.method == 'GET':
         return render(request, 'login.html', {'form':AuthenticationForm()})
@@ -39,6 +46,7 @@ def loginuser(request):
 
 @csrf_exempt
 def signupuser(request):
+    remove_old_data()
     if request.method == 'GET':
         return render(request, 'signup.html', {'form':UserCreationForm()})
     else:
@@ -62,15 +70,18 @@ def signupuser(request):
 
 
 def generate_key():
-	S = 32
-	random_key = ''.join(random.choices(string.ascii_uppercase + string.digits, k = S))  
-	return str(random_key)
+  remove_old_data()
+  S = 32
+  random_key = ''.join(random.choices(string.ascii_uppercase + string.digits, k = S))  
+  return str(random_key)
 
 def settings_view(request):
+  remove_old_data()
   return render(request, "dev.html")
 
 
 def restroom_sign_in_view(request):
+  remove_old_data()
   context = {}
   ratings = []
   titles = []
@@ -93,13 +104,13 @@ def restroom_sign_in_view(request):
 
       
 
-
+  
   unioned_rating = Review.objects.none()
   for r_rating in ratings:
     unioned_rating = unioned_rating | r_rating
   contexted_rating = []
   for item in unioned_rating:
-    contexted_rating.append([list(range(item.score)), item.text])
+    contexted_rating.append([list(range(item.suggest_score)), f"관리: {item.sanitation_score/10}점", f"안전: {item.safe_score/10}점"])
 
   context["restrooms"] = titles
   context["reviews"] = contexted_rating
@@ -184,6 +195,7 @@ def qr_scan(request, mode, slug):
 
 @csrf_exempt
 def private_restroom_form(request):
+    remove_old_data()
     selections = []
     buildings = Building.objects.filter(user=request.user)
     for h in buildings:
@@ -215,6 +227,7 @@ def private_restroom_form(request):
 
 @csrf_exempt
 def private_restroom_form_manage(request, key):
+    remove_old_data()
     selections = []
     
     rest = Restroom.objects.get(key=key)
@@ -250,11 +263,13 @@ def private_restroom_form_manage(request, key):
         return render(request, 'restroommanage.html', {'restroom':key, "time":p_restroom.time_left, "selections":selections})
 
 def viewer_home(request):
+  remove_old_data()
   splash_text = ["오늘 날씨가 좋은가요?", "안전과 위생, 어떤것이 더 중요할까요? 답은: 둘다!", "개발자님이 똑똑해요 ㅋㅋㅋ", "안심과 안전, 차이점은?", "좋은 하루!", "오호 확률이 낮은 문구가 나왔네요!"]
   return render(request, "home.html", {"splash":random.choice(splash_text)})
 
 
 def qrgen(request, code):
+    remove_old_data()
     context = {}
     if request.method == "GET":
         factory = qrcode.image.svg.SvgImage
@@ -267,6 +282,7 @@ def qrgen(request, code):
 
 @csrf_exempt
 def review(request, code):
+  remove_old_data()
   
   context = {}
   
@@ -283,9 +299,12 @@ def review(request, code):
   else:
 
     context["response"] = "소중한 의견 감사합니다!"
-    rating = request.POST["rate"]
-    review = request.POST["review"]
-    review = Review.objects.create(score=rating, text=review)
+    print(request.POST)
+    san = request.POST["manage"]
+    saf = request.POST["safety"]
+    rate =  request.POST["suggest"]
+   
+    review = Review.objects.create(sanitation_score=san, safe_score=saf, suggest_score=rate)
     restroom.reviews.add(review)
     return render(request, "user_response.html", context=context)
 
