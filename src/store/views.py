@@ -254,7 +254,7 @@ def restroom_sign_in_view(request):
     fin_qr_code_a = fin_qr_code.replace(" ", "%20")
     
     obj.save()
-    message = f"안녕하세요! {obj.p_restroom.restroom.building.title} {obj.p_restroom.restroom.title}에서 보내는 메세지 입니다. QR코드 링크는: https://ansimhwajangsil.compilingcoder.repl.co/link/{fin_qr_code_a} 이고 유효 시간이 {obj.p_restroom.time_left}분입니다. 의견을 남겨주세요! https://ansimhwajangsil.compilingcoder.repl.co/review/{obj.p_restroom.restroom.key}"
+    message = f"안심e화장실 - 안녕하세요! {obj.p_restroom.restroom.building.title} {obj.p_restroom.restroom.title}에서 보내는 메세지 입니다. QR코드 링크는: https://ansimhwajangsil.compilingcoder.repl.co/link/{fin_qr_code_a} 이고 유효 시간이 {obj.p_restroom.time_left}분입니다. 의견을 남겨주세요! https://ansimhwajangsil.compilingcoder.repl.co/review/{obj.p_restroom.restroom.key}"
     print(message)
 
     """obj.p_restroom.restroom.key로 /review/<key>"""

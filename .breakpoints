@@ -1,19 +1,11 @@
 {
   "files": {
-    "src/store/views.py": [
+    "README.md": [
       {
-        "id": "53a26e03-8549-4d83-a1b5-5586076a3359",
-        "line": 48,
-        "version": 4178,
-        "index": 1672
-      }
-    ],
-    "src/templates/base.html": [
-      {
-        "id": "62202268-085a-4761-8625-c1ae0698fc95",
-        "line": 47,
-        "version": 902,
-        "index": 1116
+        "id": "4b801d47-7db9-4133-a522-f9d797a65959",
+        "line": 12,
+        "version": 1,
+        "index": 165
       }
     ]
   }
