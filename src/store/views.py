@@ -20,7 +20,27 @@ import os
 from twilio.rest import Client
 date_format = '%Y-%m-%d %H:%M:%S'
 from django.views.decorators.csrf import csrf_exempt
+from django.contrib.auth.decorators import login_required
 from dateutil.relativedelta import relativedelta
+def update_month():
+  all_buildings = Building.objects.all()
+  all_p_restrooms = PrivateRestroom.objects.all()
+  c_month = timezone.now().month
+  for  building in all_buildings:
+    if building.month != c_month:
+      building.past_visit = building.month
+      building.visit = 0
+      building.month = c_month
+      
+      print("DELETED DATA")
+  for  restroom in all_p_restrooms:
+    if restroom.month != c_month:
+      
+      restroom.past_visit = restroom.visit
+      restroom.visit = 0
+      restroom.month = c_month 
+      restroom.restroom.reviews = Review.objects.none()   
+      print("DELETED DATA")
 def remove_old_data():
     for data in RestroomVisitData.objects.all():
       if data.made_time + relativedelta(months=3) < timezone.now():
@@ -75,45 +95,142 @@ def generate_key():
   random_key = ''.join(random.choices(string.ascii_uppercase + string.digits, k = S))  
   return str(random_key)
 
-def settings_view(request):
+def dashboard(request):
   remove_old_data()
-  return render(request, "dev.html")
-
-
+  return render(request, "dashboard.html")
+@csrf_exempt
+@login_required
 def restroom_sign_in_view(request):
+  update_month()
   remove_old_data()
   context = {}
+  avged_full = 0
   ratings = []
   titles = []
-  template_name = 'form.html'
+  bcount = []
+  pcount = []
+  contexted_rating = []
+  template_name = 'dashboard.html'
   form = RestroomVisitDataForm(request.user,request.POST or None)
   buildings = Building.objects.filter(user=request.user)
- 
+  updown = {}
+  bcount_past = []
+  pcount_past = []
+
+  rev_data_all = []
+  for building in buildings:
+    bcount.append(building.visit)
+    bcount_past.append(building.past_visit)
+  if sum(bcount_past) < sum(bcount):
+      updown["buildup"] = True
+  else:
+      updown["buildup"] = False
+
   for h in buildings:
     a = Restroom.objects.filter(building=h)
+    
     for k in a:
       
       try:
         restp = PrivateRestroom.objects.get(restroom=k, owner=request.user)
-        titles.append([f"{restp.restroom.building.title}의 {restp.restroom.title}", restp.restroom.key])
-        ratings.append(restp.restroom.reviews.all())
-       
+        pcount.append(restp.visit)
+        pcount_past.append(restp.past_visit)
+
+        
+        
+
+        titles.append([f"{restp.restroom.building.title}의 {restp.restroom.title} [{restp.restroom.key}]", restp.restroom.key])
+        ratings.append(restp.restroom.reviews)
+        unioned_rating = restp.restroom.reviews.all()
+        print(unioned_rating)
+        contexted_rating = []
+        i = 0
+        rev_list_safe = []
+        rev_list_full =[]
+        rev_list_san = []
+
+        for item in unioned_rating:
+          contexted_rating.append([list(range(item.suggest_score)), f"관리: {item.sanitation_score/10}점", f"안전: {item.safe_score/10}점", item.suggest_score])
+          rev_list_safe.append(item.safe_score/10)
+          rev_list_san.append(item.sanitation_score/10)
+          rev_list_full.append(item.suggest_score)
+          print("AAA")
+        try:
+          avg_san = sum(rev_list_san)/len(rev_list_san)
+          avg_safe = sum(rev_list_safe)/len(rev_list_safe)
+          avg_full = sum(rev_list_full)/len(rev_list_full)
+          
+        except:
+          avg_san = 0
+          avg_safe = 0
+          avg_full = 0
+        
+        rev_data_all.append([restp.restroom.title, avg_san, avg_safe, avg_full])
+          
+
+        
+        
+        
+
       except:
         pass     
 
 
-      
-
-  
-  unioned_rating = Review.objects.none()
-  for r_rating in ratings:
-    unioned_rating = unioned_rating | r_rating
-  contexted_rating = []
-  for item in unioned_rating:
-    contexted_rating.append([list(range(item.suggest_score)), f"관리: {item.sanitation_score/10}점", f"안전: {item.safe_score/10}점"])
-
+  abcdef = []
+  for data in rev_data_all:
+    dat = data[3]
+    if dat > 0 and dat <= 5:
+      abcdef.append(dat)
+      if dat >= 4:
+        context["happy"] = True
+      elif dat >= 3:
+        context["ok"] = True
+      else:
+        context["sad"] = True
+    
+  try:
+    avged_full = sum(abcdef)/len(abcdef)
+  except:
+    avged_full = 0
+ 
+  context["scf"] = avged_full
   context["restrooms"] = titles
   context["reviews"] = contexted_rating
+  context["avged"] = rev_data_all
+  if sum(pcount_past) < sum(pcount):
+          updown["restup"] = True
+  else:
+          updown["restup"] = False
+  
+  try:
+    context["building"] = bcount[0]
+    
+  except:
+    context["building"] = "ERROR"
+  context["store"] = sum(pcount)
+  
+  try:
+    context["percentage"], percent = int(sum(pcount)/context["building"]* 100), sum(pcount)/context["building"]* 100 
+    past_percent = sum(pcount_past)/sum(bcount_past)
+    if past_percent < percent:
+      updown["percent"] = True
+      
+      print(past_percent)
+      print(percent)
+    else:
+      
+      updown["percent"] = False
+      
+    
+  except:
+    context["percentage"] = "ERROR"
+  
+  context["all_user_up"] = updown["buildup"]
+  context["store_user_up"] = updown["restup"]
+  try:
+    context["user_up"] = updown["percent"]
+  except:
+    context["user_up"] = False
   if form.is_valid():
     obj = form.save(commit=False)
     data = form.cleaned_data
@@ -131,7 +248,7 @@ def restroom_sign_in_view(request):
     hash = hashlib.sha256(key_.encode()).hexdigest()
     time_stamp = str(timezone.now()).split("+")[0]
 
-    fin_qr_code = time_stamp + "_" + hash + "_" + data["telephone"]
+    fin_qr_code = time_stamp + "_" + hash + "_" + hashlib.sha256(data["telephone"].encode()).hexdigest()
     
     obj.qr = fin_qr_code
     fin_qr_code_a = fin_qr_code.replace(" ", "%20")
@@ -159,6 +276,7 @@ def restroom_sign_in_view(request):
     print(message.sid)
   
     obj.link_recieved_time = timezone.now()
+    obj.save()
 
     form = RestroomVisitDataForm(request.user)
     
@@ -209,14 +327,14 @@ def private_restroom_form(request):
     else:
         restroom_key = request.POST["restroom"]
         
-        try:
-          restroom = Restroom.objects.get(
+        
+        restroom = Restroom.objects.get(
             key=restroom_key
           )
           
           
-        except:
-          return render(request, 'restroomcreate.html', {'error':'이 화장실 아이디는 존재하지 않습니다.', "selections":selections})
+        
+        
         try:
           
           PrivateRestroom.objects.create(restroom=restroom, time_left=request.POST["time"], owner=request.user)
@@ -255,8 +373,7 @@ def private_restroom_form_manage(request, key):
           return render(request, 'restroommanage.html', {'error':'이 화장실 아이디는 존재하지 않습니다.', "selections":selections})
         try:
           
-          p_restroom.restroom, p_restroom.time_left = restroom,  request.POST["time"]
-
+          p_restroom.time_left = request.POST["time"]
           p_restroom.save()
         except:
           return render(request, 'restroommanage.html', {'error':'설문지를 다시 확인해주세요.', "selections":selections})

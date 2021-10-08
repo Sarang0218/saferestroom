@@ -16,7 +16,7 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path
 from django.conf.urls.static import static
-from store.views import restroom_sign_in_view, loginuser, signupuser, settings_view, viewer_home, private_restroom_form, private_restroom_form_manage, qrgen, logout_view, review
+from store.views import restroom_sign_in_view, loginuser, signupuser, dashboard, viewer_home, private_restroom_form, private_restroom_form_manage, qrgen, logout_view, review
 
 from server.views import error_404_view, qr_scan
 from django.conf import settings
@@ -28,11 +28,12 @@ urlpatterns = [
     path("", viewer_home, name='home'),
     path("settings", private_restroom_form, name="settings"),
     path("error404", error_404_view, name="error"),
-    path("api/scan/<str:code>", qr_scan, name="scan"),
+    path("api/scan/<str:code>/<str:rc>", qr_scan, name="scan"),
     path("manage/<str:key>", private_restroom_form_manage, name="manage"),
     path("link/<str:code>", qrgen, name="qr"),
     path("logout", logout_view, name="logout"),
-    path("review/<str:code>", review, name="review")
+    path("review/<str:code>", review, name="review"),
+    path("analytics", dashboard, name="dashboard")
 
     
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

@@ -15,6 +15,9 @@ class Review(models.Model):
 class Building(models.Model):
     title = models.CharField(max_length=50)
     user = models.ManyToManyField(settings.AUTH_USER_MODEL, related_name="building")
+    visit = models.IntegerField(default=0)
+    past_visit = models.IntegerField(default=0)
+    month = models.IntegerField(default=timezone.now().month)
 
 class Restroom(models.Model):
 
@@ -43,6 +46,9 @@ class PrivateRestroom(models.Model):
         settings.AUTH_USER_MODEL,
         on_delete=models.CASCADE,
     )
+    visit = models.IntegerField(default=0)
+    past_visit = models.IntegerField(default=0)
+    month = models.IntegerField(default=timezone.now().month)
     def __str__(self):
       return self.restroom.title
     

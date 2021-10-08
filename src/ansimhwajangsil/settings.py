@@ -129,3 +129,4 @@ STATICFILES_DIRS = [
     BASE_DIR / "static",
     '/var/www/static/',
 ]
+X_FRAME_OPTIONS = 'SAMEORIGIN'

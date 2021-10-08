@@ -1,11 +1,19 @@
 {
   "files": {
+    "src/store/views.py": [
+      {
+        "id": "53a26e03-8549-4d83-a1b5-5586076a3359",
+        "line": 48,
+        "version": 4178,
+        "index": 1672
+      }
+    ],
     "src/templates/base.html": [
       {
         "id": "62202268-085a-4761-8625-c1ae0698fc95",
-        "line": 30,
-        "version": 795,
-        "index": 802
+        "line": 47,
+        "version": 902,
+        "index": 1116
       }
     ]
   }
